@@ -47,7 +47,7 @@
     <property name="mapping.fonts"  location="${dir.app.temp}/${mapping.file.fonts}" />
     
     <!-- Tool Directories -->
-    <property name="dir.jar"            location="${dir.build}/Bin/jar" />
+    <property name="dir.jar"            location="${dir.build}/jar" />
     <property name="dir.java"           location="${dir.build}/java" />
     <property name="dir.java.src"       location="${dir.java}/java/src" />
     <property name="dir.java.lib"       location="${dir.java}/java/Lib" />

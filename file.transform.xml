@@ -16,12 +16,12 @@
         depends="-check.filetransform.present" 
         unless="filetransform.present">
         
-        <property name="dir.filetransform.classes" location="${dir.external.lib}/FileTransform/Classes" />
+        <property name="dir.filetransform.classes" location="${dir.java.lib}/FileTransform/Classes" />
         
         <mkdir dir="${dir.filetransform.classes}" />
         
         <javac 
-            srcdir="${dir.external.src}" 
+            srcdir="${dir.java}" 
             destdir="${dir.filetransform.classes}" 
             includes="FileTransform/FileTransform.java" >
             <classpath>
