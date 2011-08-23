@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+    
+    <!-- Task: determine if we need to build FileTransform-->
+    <target name="-check.filetransform.present">
+        <available 
+            property="filetransform.present" 
+            classname="com.yahoo.platform.build.ant.FileTransform" 
+            classpath="${tools.filetransform}" 
+        />
+    </target>
+    
+    <!-- Task: build filetransform from its .java source -->
+    <target 
+        name="-build.filetransform" 
+        depends="-check.filetransform.present" 
+        unless="filetransform.present">
+        
+        <property name="dir.filetransform.classes" location="${dir.external.lib}/FileTransform/Classes" />
+        
+        <mkdir dir="${dir.filetransform.classes}" />
+        
+        <javac 
+            srcdir="${dir.external.src}" 
+            destdir="${dir.filetransform.classes}" 
+            includes="FileTransform/FileTransform.java" >
+            <classpath>
+                <pathelement location="ant.jar"/>
+            </classpath>
+        </javac>
+        
+        <jar destfile="${tools.filetransform}" basedir="${dir.filetransform.classes}" />
+        
+        <delete dir="${dir.filetransform.classes}" />
+    </target>
+    
+    <!-- Task: define FileTransform task for use in Ant -->
+    <target name="-define.filetransform" depends="-build.filetransform">
+        <taskdef 
+            name="FileTransform" 
+            classname="com.yahoo.platform.build.ant.FileTransform" 
+            classpath="${tools.filetransform}"
+        />
+    </target>
+    
+    <!-- Macro: Rename files matching the filter to [file-name].[checksum].[ext], delete the originals -->
+    <macrodef name="rename-files">
+        <attribute name="mapping" />
+        <attribute name="include" />
+        <attribute name="exclude" />
+        <sequential>
+            <local name="mapping.file" />
+            
+            <basename file="@{mapping}" property="mapping.file" />
+            
+            <!-- Inspect files & move them to new names -->
+            <FileTransform changefilenames="true" 
+                           propertiesfile="@{mapping}" 
+                           movefiles="true" 
+                           additionalText="${cdn.extra.text}">
+                <fileset 
+                    dir="${dir.app.files}" 
+                    includes="@{include}" 
+                />
+            </FileTransform>
+            
+            <!-- update references to renamed files -->
+            <replace 
+                dir="${dir.app.temp}" 
+                replacefilterfile="@{mapping}" 
+                excludes="@{exclude}, **/${mapping.file}" 
+            />
+        </sequential>
+    </macrodef>
+</project>

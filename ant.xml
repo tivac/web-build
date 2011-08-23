@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project name="WebBuild">
+    
+    <!-- generate timestamps -->
+    <tstamp />
+    
+    <!-- Debugging Macro -->
+    <import file="echopath.xml" />
+    
+    <!-- Component Build Files -->
+    <import file="setup.xml" />
+    <import file="clean.xml" />
+    <import file="copy.xml" />
+    <import file="file.transform.xml" />
+    <import file="external.tools.xml" />
+    <import file="rename.xml" />
+    <import file="js.xml" />
+    <import file="css.xml" />
+    <import file="yui.xml" />
+    <import file="appcache.xml" />
+    <import file="cdn.xml" />
+    <import file="datauri.xml" />
+    <import file="devlive.xml" />
+    
+    <!-- This dirname is the only complete path we know for sure, everything builds off of it -->
+    <dirname property="dir.build" file="${ant.file.WebBuild}" />
+    
+    <!-- get name for newly built folder -->
+    <basename property="app.name"       file="${basedir}" />
+    
+    <!-- read global properties file -->
+    <property file="${dir.build}\build.properties" />
+    
+    <!-- Build Directories -->
+    <property name="dir.build.js"   location="${dir.build}/js" />
+    
+    <!-- App Directories -->
+    <property name="dir.app"        location="${dir.result}/${app.name}" />
+    <property name="dir.app.temp"   location="${dir.temp}/${app.name}" />
+    <property name="dir.app.files"  location="${dir.app.temp}/${dir.files}" />
+    
+    <!-- Files -->
+    <property name="mapping.js"     location="${dir.app.temp}/${mapping.file.js}" />
+    <property name="mapping.css"    location="${dir.app.temp}/${mapping.file.css}" />
+    <property name="mapping.img"    location="${dir.app.temp}/${mapping.file.img}" />
+    <property name="mapping.swf"    location="${dir.app.temp}/${mapping.file.swf}" />
+    <property name="mapping.fonts"  location="${dir.app.temp}/${mapping.file.fonts}" />
+    
+    <!-- Tool Directories -->
+    <property name="dir.jar"            location="${dir.build}/Bin/jar" />
+    <property name="dir.java"           location="${dir.build}/java" />
+    <property name="dir.java.src"       location="${dir.java}/java/src" />
+    <property name="dir.java.lib"       location="${dir.java}/java/Lib" />
+    
+    <!-- Tool Files -->
+	<property name="tools.compressor"     location="${dir.jar}/${tools.file.compressor}" />
+	<property name="tools.cssembed"       location="${dir.jar}/${tools.file.cssembed}" />
+    <property name="tools.filetransform"  location="${dir.jar}/${tools.file.filetransform}" />
+    
+    
+    <!-- BUILD TARGETS -->
+    
+    <!-- low level utility build targets -->
+    
+    <!-- Build the tools -->
+    <target name="-setup.build.tools" 
+            depends="-define.filetransform, -define.cssembed, -define.yuicompressor, -define.jsclasspath" 
+    />
+    
+    <!-- set up filesystem properties -->
+    <target name="-setup" 
+            depends="-setup.conditions, -setup.js, -setup.css, -setup.swf, -setup.img, -setup.fonts, -setup.yui" 
+    />
+    
+    <!-- utility-ish targets -->
+    <target name="copy"         depends="clean, tools, -copy" />
+    <target name="tools"        depends="-setup.build.tools" />
+    <target name="finalize"     depends="copy, -finalize" />
+    <target name="-prepare"     depends="copy, -setup" />
+    
+    <!-- individual component build targets (empty descriptions are to make sure they show in "ant -p") -->
+    <target name="devlive"      depends="-prepare, -devlive"            description="" />
+    <target name="js"           depends="-prepare, -js"                 description="" />
+    <target name="css"          depends="-prepare, -css"                description="" />
+    <target name="rename"       depends="-prepare, -rename"             description="" />
+    <target name="yui"          depends="-prepare, rename, -yui"        description="" />
+    <target name="cdn"          depends="-prepare, -cdn"                description="" />
+    <target name="appcache"     depends="-prepare, -rename, -appcache"  description="" />
+    
+    <!-- high level build targets -->
+    <target name="core"
+            depends="devlive, rename, yui, js, css, cdn, appcache"
+            description="Core build work"
+    />
+    
+    <target name="prod" 
+            depends="core, finalize" 
+            description="Full Production Build" 
+    />
+    
+    <!-- debug target -->
+    <target name="debug"> 
+      <echoproperties/>
+    </target> 
+    
+</project>

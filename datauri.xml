@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+
+    <!-- Macro: Embed Data URIs in the specified files -->
+    <macrodef name="datauri">
+        <attribute name="filter" />
+        <attribute name="max-image" default="0" />
+        <sequential>
+            <cssembed 
+                root="${dir.app.files}" 
+                skipMissing="true" 
+                maxImageSize="@{max-image}" >
+                <fileset dir="${dir.app.files}" includes="@{filter}" />
+            </cssembed>
+        </sequential>
+    </macrodef>
+    
+</project>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+    <!-- Use like:
+        <fileset id="output.fileset" dir="." />
+        <echopath pathid="output.fileset" />
+    -->
+    <macrodef name="echopath">
+        <attribute name="pathid"/>
+        <sequential>
+            <property name="line.pathprefix" value="| |-- "/>
+            <!-- get given path in a printable form -->
+            <pathconvert 
+                pathsep="${line.separator}${line.pathprefix}" 
+                property="echo.@{pathid}" 
+                refid="@{pathid}" 
+            />
+            <echo>Path @{pathid}${line.separator}${line.pathprefix}${echo.@{pathid}}</echo>
+        </sequential>
+    </macrodef>
+    
+</project>

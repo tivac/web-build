@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+    <macrodef name="clean-temp-files">
+        <sequential>
+            <delete 
+                includeemptydirs="true" 
+                failonerror="false" 
+                dir="${dir.app.temp}" 
+            />
+        </sequential>
+    </macrodef>
+    
+    
+    <!-- Task: Clean generated files -->
+    <target name="clean" description="">
+        <clean-temp-files />
+    </target>
+    
+    <!-- Task: clean up generated tools -->
+    <target name="clean.tools">
+        <delete file="${tools.filetransform}" />
+    </target>
+    
+    <!-- Task: Clean generated files & any compiled tools -->
+    <target name="clean.all" depends="clean.tools, clean" />
+    
+</project>

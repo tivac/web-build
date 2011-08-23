@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+    
+    <!-- make this work a macro so it can be more easily shared -->
+    <macrodef name="appcache-generation">
+        <attribute name="file" />
+        <attribute name="dir" />
+        <attribute name="prefix" default="" />
+        
+        <sequential>
+            <local name="appcache.files" />
+            <local name="appcache.files.cleaned" />
+            <local name="appcache.dir" />
+            
+            <property name="appcache.dir" value="@{dir}" />
+            <pathconvert property= "appcache.files" pathsep= "${line.separator}" dirsep= "/">
+                <path>
+                    <fileset dir="@{dir}" includes="${filter.appcache.files}" />
+                </path>
+            </pathconvert>
+            
+            <!-- use JS to make relative URLs from absolute file paths -->
+            <script language="javascript" 
+                    classpathref="script.classpath">
+                
+                var _p = {
+                        appcache : {
+                            dir   : "" + project.getProperty("appcache.dir"),
+                            files : "" + project.getProperty("appcache.files")
+                        },
+                        cdn : {
+                            base : project.getProperty("cdn.base")
+                        }
+                    },
+                    cdn = _p.cdn.base || ""
+                    prefix = "@{prefix}",
+                    dir = _p.appcache.dir.replace("\\", "/", "g"),
+                    replacement = cdn + (cdn || prefix ? "/" : "") + prefix;
+                
+                project.setProperty("appcache.files.cleaned", _p.appcache.files.replace(dir, replacement, "g"));
+            </script>
+            
+            <!-- update the appcache file with new values -->
+            <replace 
+                file="@{file}" 
+                token="# files" 
+                value="# files${line.separator}${appcache.files.cleaned}" 
+            />
+            <replaceregexp 
+                file="@{file}"
+                flags="m" 
+                match="^# version.*$"
+                replace="# version ${DSTAMP} ${TSTAMP}"
+            />
+        </sequential>
+    </macrodef>
+    
+    <target name="-appcache.conditional">
+        <pathconvert property="appcache.file" 
+                     setonempty="false">
+            <path>
+                <fileset 
+                    dir="${dir.app.temp}" 
+                    includes="${filter.appcache}" 
+                />
+            </path>
+        </pathconvert>
+    </target>
+    
+    <target name="-appcache.generator" if="appcache.file">
+        <appcache-generation
+            file = "${appcache.file}"
+            dir  = "${dir.app.files}"
+        />
+    </target>
+    
+    <target name="-appcache" depends="-appcache.conditional, -appcache.generator" />
+</project>

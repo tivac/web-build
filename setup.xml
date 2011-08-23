@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project name="JsSrvSetup">
+    
+    <!-- Determine what parts of the build script to actually run, depending on if the files exist on disk -->
+    <target name="-setup.js" if="run.public">
+        <pathconvert property="js.files" setonempty="false" pathsep=",">
+            <path>
+                <fileset dir="${dir.app.files}" includes="${filter.js}" />
+            </path>
+        </pathconvert>
+    </target>
+    
+    <target name="-setup.css" if="run.public">
+        <pathconvert property="css.files" setonempty="false" pathsep=",">
+            <path>
+                <fileset dir="${dir.app.files}" includes="${filter.css}" />
+            </path>
+        </pathconvert>
+    </target>
+    
+    <target name="-setup.img" if="run.public">
+        <pathconvert property="img.files" setonempty="false" pathsep=",">
+            <path>
+                <fileset dir="${dir.app.files}" includes="${filter.img}" />
+            </path>
+        </pathconvert>
+    </target>
+    
+    <target name="-setup.swf" if="run.public">
+        <pathconvert property="swf.files" setonempty="false" pathsep=",">
+            <path>
+                <fileset dir="${dir.app.files}" includes="${filter.swf}" />
+            </path>
+        </pathconvert>
+    </target>
+    
+    <target name="-setup.fonts" if="run.public">
+        <pathconvert property="fonts.files" setonempty="false" pathsep=",">
+            <path>
+                <fileset dir="${dir.app.files}" includes="${filter.fonts}" />
+            </path>
+        </pathconvert>
+    </target>
+    
+    <target name="-setup.yui" if="run.public" unless="js.noyui">
+        <pathconvert property="js.yui.files" setonempty="false" pathsep=",">
+            <path>
+                <fileset dir="${dir.app.files}" includes="${filter.js.yui}" />
+            </path>
+        </pathconvert>
+    </target>
+    
+    
+    <!-- Check to make sure the dirs exist before looking for files -->
+    <target name="-setup.conditions">
+        <available property="run.public" type="dir" file="${dir.app.files}" />
+    </target>
+</project>

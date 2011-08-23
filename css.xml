@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+    
+    <!-- determine whether the right properties are set for running the CSS embedding tasks -->
+    <target name="-css.conditional" if="css.files">
+        <condition property="mhtml.are.go">
+            <and>
+                <isset property="css.datauri.mhtmlext" />
+                <isset property="css.datauri.mhtmlroot" />
+            </and>
+        </condition>
+        
+        <condition property="datauri.are.go">
+            <and>
+                <isset property="filter.css.datauri" />
+                <isset property="css.datauri.inline.size" />
+                <not>
+                    <equals 
+                        arg1="${css.datauri.inline.size}" 
+                        arg2="0" 
+                        trim="true" 
+                    />
+                </not>
+            </and>
+        </condition>
+    </target>
+
+    <!-- Task: create MHTML -->
+    <target name="-css.mhtml" if="mhtml.are.go">
+        <!-- Generate MHTML file -->
+        <cssembed 
+            root="${dir.app.files}" 
+            skipMissing="true" 
+            mhtml="true" 
+            mhtmlRoot="${css.datauri.mhtmlroot}">
+            <fileset dir="${dir.app.files}" includes="${filter.css.datauri}" />
+            <mapper type="glob" from="*.css" to="${css.datauri.mhtmlext}" />
+        </cssembed>
+        
+        <!-- Preserve the comments in mhtml files -->
+        <replace dir="${dir.app.files}">
+            <include name="**/*${css.datauri.mhtmlext}" />
+            <replacefilter>
+                <replacetoken>/*</replacetoken>
+                <replacevalue>/*!</replacevalue>
+            </replacefilter>
+        </replace> 
+    </target>
+    
+    <!-- Task: Run through CSS files, convert image refs to dataURIs -->
+    <target name="-css.datauri" if="datauri.are.go">
+        <datauri 
+            filter="${filter.css.datauri}" 
+            max-image="${css.datauri.inline.size}" 
+        />
+    </target>
+    
+    <!-- Task: Compress CSS using YUI Compressor -->
+    <target name="-css.compress" if="css.files">
+        <yuicompressor options="--type=css">
+            <fileset dir="${dir.app.files}" includes="${filter.css}" />
+        </yuicompressor>
+    </target>
+    
+    <!-- Main CSS kick off task -->
+    <target 
+        name="-css" 
+        if="css.files" 
+        depends="-css.conditional, -css.mhtml, -css.datauri, -css.compress" 
+    />
+    
+</project>

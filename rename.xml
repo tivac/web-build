@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+    
+    <target name="-rename.js" if="js.files">
+        <rename-files 
+            mapping="${mapping.js}" 
+            include="${filter.js}" 
+            exclude="${filter.binary}"
+        />
+    </target>
+    
+    <target name="-rename.css" if="css.files">
+        <rename-files 
+            mapping="${mapping.css}" 
+            include="${filter.css}" 
+            exclude="${filter.binary}"
+        />
+    </target>
+    
+    <target name="-rename.fonts" if="fonts.files">
+        <rename-files 
+            mapping="${mapping.fonts}" 
+            include="${filter.fonts}" 
+            exclude="${filter.binary}"
+        />
+    </target>
+    
+    <target name="-rename.img" if="img.files">
+        <rename-files 
+            mapping="${mapping.img}" 
+            include="${filter.img}" 
+            exclude="${filter.binary}"
+        />
+    </target>
+    
+    <target name="-rename.swf" if="swf.files">
+        <rename-files 
+            mapping="${mapping.swf}" 
+            include="${filter.swf}" 
+            exclude="${filter.binary}"
+        />
+    </target>
+    
+    <!-- clean up mapping files (called by finalize step) -->
+    <target name="-rename.clean" unless="mapping.files.preserve">
+        <delete quiet="true">
+            <fileset 
+                dir="${dir.app.temp}" 
+                includes="${filter.mapping}"
+            />
+        </delete>
+    </target>
+    
+    <target 
+        name="-rename" 
+        depends="-rename.js, -rename.css, -rename.img, -rename.fonts, -rename.swf" 
+    />
+    
+</project>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+    
+    <!-- Base regexes -->
+    <property name="regex.devlive.jscss">//?\* dev.*?/dev \*/</property>
+    <property name="regex.devlive.html">&lt;!-- dev -->.*?!-- /dev --></property>
+    <property name="regex.devlive.enable">/\* live|/+live \*/|&lt;!-- live|/live --></property>
+    
+    <!-- check for stage/live -->
+    <target name="-devlive.mode.check" if="build.mode">
+        <condition property="devlive.mode">
+            <and>
+                <isset property="build.mode" />
+                <not>
+                    <equals 
+                        arg1="${build.mode}" 
+                        arg2="dev" 
+                        trim="true" 
+                        casesensitive="false" 
+                    />
+                </not>
+            </and>
+        </condition>
+    </target>
+
+    <!-- handle dev -> live switches in js/css/html files (only runs if a build.mode is specified) -->
+    <target name="-devlive" depends="-devlive.mode.check" if="devlive.mode">
+        
+        <!-- remove dev code -->
+        <replaceregexp flags="gs">
+            <fileset dir="${dir.app.temp}" excludes="${filter.binary}"/>
+            <regexp pattern="${regex.devlive.jscss}|${regex.devlive.html}" />
+            <substitution expression="" />
+        </replaceregexp>
+        
+        <!-- uncomment live code -->
+        <replaceregexp flags="gs">
+            <fileset dir="${dir.app.temp}" excludes="${filter.binary}"/>
+            <regexp pattern="${regex.devlive.enable}" />
+            <substitution expression="" />
+        </replaceregexp>
+        
+    </target>
+</project>

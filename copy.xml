@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+
+    <!-- Task: Create the build folder from the dev data -->
+    <target name="-copy" depends="-setup.build.tools">
+        <mkdir dir="${dir.temp}" />
+        
+        <copy todir="${dir.app.temp}" overwrite="true">
+            <fileset dir="${basedir}" includes="${filter.copy}" excludes="${filter.nocopy}" />
+        </copy>
+    </target>
+    
+    <!-- Task: Move built files to their final home, clean up the temporary location -->
+    <target name="-finalize.move" depends="-copy, -rename.clean">
+        <!-- Make sure the resulting app folder exists -->
+        <mkdir dir="${dir.app}" />
+        
+        <!-- clear out any existing build -->
+        <delete 
+            includeemptydirs="true" 
+            failonerror="false" 
+            dir="${dir.app}" 
+        />
+        
+        <!-- Copy the successful build in the temp dir -->
+        <copy todir="${dir.app}" overwrite="true">
+            <fileset dir="${dir.app.temp}" />
+        </copy>
+    </target>
+    
+    <target name="-finalize.clean" unless="skip.cleanup">
+        <clean-temp-files />
+    </target>
+    
+    <target name="-finalize" depends="-finalize.move, -finalize.clean" />
+</project>

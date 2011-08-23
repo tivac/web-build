@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+    
+    <!-- Task: define YUI Compressor task for use in Ant -->
+    <target name="-define.yuicompressor">
+        <taskdef 
+            name="yuicompressor" 
+            classname="com.yahoo.platform.yui.compressor.CompressorTask" 
+            classpath="${tools.compressor}"
+        />
+    </target>
+    
+    <!-- Task: define CSSEmbed task for use in Ant -->
+    <target name="-define.cssembed">
+        <taskdef 
+            name="cssembed" 
+            classname="net.nczonline.web.cssembed.CSSEmbedTask" 
+            classpath="${tools.cssembed}"
+        />
+    </target>
+    
+    <!-- Property: Store classpath for running JS scripts -->
+    <target name="-define.jsclasspath">
+        <path id="script.classpath">
+            <fileset dir="${dir.jar}" includes="*.jar" />
+        </path>
+    </target>
+    
+</project>

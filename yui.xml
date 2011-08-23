@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+    
+    <target name="-yui.conditional" if="js.yui.files">
+        <condition property="yui.mapping.files">
+            <and>
+                <available file="${mapping.js}" />
+                <available file="${mapping.css}" />
+            </and>
+        </condition>
+    </target>
+    
+    <target name="-yui.config.parser" if="yui.mapping.files">
+        <script 
+            language="javascript" 
+            src="${dir.build.js}/yui-config-parser.js"
+            classpathref="script.classpath"
+        />
+    </target>
+    
+    <target name="-yui" depends="-yui.conditional, -yui.config.parser" />
+</project>
