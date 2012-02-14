@@ -2,7 +2,7 @@
 <project>
     
     <!-- determine whether the right properties are set for running the CSS embedding tasks -->
-    <target name="-css.conditional" if="css.files">
+    <target name="-css.conditional" if="css.files" unless="build.mode.dev">
         <condition property="mhtml.are.go">
             <and>
                 <isset property="css.datauri.mhtmlext" />
@@ -56,7 +56,7 @@
     </target>
     
     <!-- Task: Compress CSS using YUI Compressor -->
-    <target name="-css.compress" if="css.files">
+    <target name="-css.compress" if="css.files" unless="build.mode.dev">
         <yuicompressor options="--type=css">
             <fileset dir="${dir.app.files}" includes="${filter.css}" />
         </yuicompressor>

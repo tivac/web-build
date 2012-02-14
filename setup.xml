@@ -42,7 +42,7 @@
         </pathconvert>
     </target>
     
-    <target name="-setup.yui" if="run.public" unless="js.noyui">
+    <target name="-setup.yui" if="run.public" unless="js.yui.disable">
         <pathconvert property="js.yui.files" setonempty="false" pathsep=",">
             <path>
                 <fileset dir="${dir.app.files}" includes="${filter.js.yui}" />
@@ -55,4 +55,44 @@
     <target name="-setup.conditions">
         <available property="run.public" type="dir" file="${dir.app.files}" />
     </target>
+    
+    <!-- Figure out what type of build this is -->
+    <target name="-setup.mode">
+        <condition property="build.mode.stage">
+            <and>
+                <isset property="build.mode" />
+                <equals 
+                    arg1="${build.mode}" 
+                    arg2="stage" 
+                    trim="true" 
+                    casesensitive="false" 
+                />
+            </and>
+        </condition>
+        
+        <condition property="build.mode.live">
+            <and>
+                <isset property="build.mode" />
+                <equals 
+                    arg1="${build.mode}" 
+                    arg2="live" 
+                    trim="true" 
+                    casesensitive="false" 
+                />
+            </and>
+        </condition>
+        
+        <!-- assume dev if stage/live not set -->
+        <condition property="build.mode.dev">
+            <and>
+                <not>
+                    <isset property="build.mode.stage" />
+                </not>
+                <not>
+                    <isset property="build.mode.live" />
+                </not>
+            </and>
+        </condition>
+    </target>
+    
 </project>

@@ -1,41 +1,8 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <project>
     
-    <!-- Task: determine if we need to build FileTransform-->
-    <target name="-check.filetransform.present">
-        <available 
-            property="filetransform.present" 
-            classname="com.yahoo.platform.build.ant.FileTransform" 
-            classpath="${tools.filetransform}" 
-        />
-    </target>
-    
-    <!-- Task: build filetransform from its .java source -->
-    <target 
-        name="-build.filetransform" 
-        depends="-check.filetransform.present" 
-        unless="filetransform.present">
-        
-        <property name="dir.filetransform.classes" location="${dir.java.lib}/FileTransform/Classes" />
-        
-        <mkdir dir="${dir.filetransform.classes}" />
-        
-        <javac 
-            srcdir="${dir.java}" 
-            destdir="${dir.filetransform.classes}" 
-            includes="FileTransform/FileTransform.java" >
-            <classpath>
-                <pathelement location="ant.jar"/>
-            </classpath>
-        </javac>
-        
-        <jar destfile="${tools.filetransform}" basedir="${dir.filetransform.classes}" />
-        
-        <delete dir="${dir.filetransform.classes}" />
-    </target>
-    
     <!-- Task: define FileTransform task for use in Ant -->
-    <target name="-define.filetransform" depends="-build.filetransform">
+    <target name="-define.filetransform">
         <taskdef 
             name="FileTransform" 
             classname="com.yahoo.platform.build.ant.FileTransform" 
@@ -47,7 +14,8 @@
     <macrodef name="rename-files">
         <attribute name="mapping" />
         <attribute name="include" />
-        <attribute name="exclude" />
+        <attribute name="exclude" default="" />
+        <attribute name="replace-exclude" default=""/>
         <sequential>
             <local name="mapping.file" />
             
@@ -61,6 +29,7 @@
                 <fileset 
                     dir="${dir.app.files}" 
                     includes="@{include}" 
+                    excludes="@{exclude}"
                 />
             </FileTransform>
             
@@ -68,7 +37,7 @@
             <replace 
                 dir="${dir.app.temp}" 
                 replacefilterfile="@{mapping}" 
-                excludes="@{exclude}, **/${mapping.file}" 
+                excludes="@{replace-exclude}, **/${mapping.file}" 
             />
         </sequential>
     </macrodef>

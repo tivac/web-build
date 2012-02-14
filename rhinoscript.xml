@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+    <macrodef name="rhinoscript">
+        <attribute name="src" />
+        <attribute name="uses" default="" />
+        
+        <sequential>
+            <local name="src.safe" />
+            
+            <pathconvert property="src.safe" dirsep="" pathsep="">
+                <path path="@{src}"/>
+
+                <filtermapper>
+                    <replacestring from="\" to="/"/>
+                </filtermapper>
+            </pathconvert>
+            
+            <script 
+                language="javascript" 
+                manager="bsf"
+                classpathref="script.classpath"
+            ><![CDATA[
+                var shell = org.mozilla.javascript.tools.shell.Main,
+                    args = ["-e","var a='STRING';"],
+                    _uses = "@{uses}";
+                
+                shell.exec(args);
+                
+                //grab functions from shell global and place in current global
+                var shellGlobal = shell.global,
+                    load = shellGlobal.load,
+                    print = shellGlobal.print,
+                    defineClass = shellGlobal.defineClass,
+                    deserialize = shellGlobal.deserialize,
+                    doctest = shellGlobal.doctest,
+                    gc = shellGlobal.gc,
+                    help = shellGlobal.help,
+                    loadClass = shellGlobal.loadClass,
+                    quit = shellGlobal.quit,
+                    readFile = shellGlobal.readFile,
+                    readUrl = shellGlobal.readUrl,
+                    runCommand = shellGlobal.runCommand,
+                    seal = shellGlobal.seal,
+                    serialize = shellGlobal.serialize,
+                    spawn = shellGlobal.spawn,
+                    sync = shellGlobal.sync,
+                    toint32 = shellGlobal.toint32,
+                    version = shellGlobal.version,
+                    environment = shellGlobal.environment;
+                
+                load(project.getProperty("dir.build") + "/js/lib/bootstrap.js");
+            ]]></script>
+        </sequential>
+    </macrodef>
+</project>

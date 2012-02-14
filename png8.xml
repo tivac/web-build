@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+    
+    <!-- Special top-level task to create 8bit pngs -->
+    <target name="png8">
+        <property name="tools.pngquant" location="${dir.bin}/pngquant/${tools.file.pngquant}" />
+        
+        <apply executable="${tools.pngquant}" osfamily="windows" force="true">
+            <fileset dir="${basedir}" includes="${filter.png}" />
+            <arg value="-ext" />
+            <arg value="-256.png" />
+            <arg value="-iebug" />
+            <arg value="256" />
+            <srcfile />
+        </apply>
+    </target>
+
+</project>

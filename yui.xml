@@ -11,11 +11,7 @@
     </target>
     
     <target name="-yui.config.parser" if="yui.mapping.files">
-        <script 
-            language="javascript" 
-            src="${dir.build.js}/yui-config-parser.js"
-            classpathref="script.classpath"
-        />
+        <rhinoscript src="${dir.build.js}/yui-config-parser.js" />
     </target>
     
     <target name="-yui" depends="-yui.conditional, -yui.config.parser" />

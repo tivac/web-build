@@ -2,7 +2,7 @@
 <project>
     
     <!-- Task: Replace "@VERSION@"  with "" -->
-    <target name="-js.remove.version" if="js.files">
+    <target name="-js.remove.version" if="js.files" unless="build.mode.dev">
         <replaceregexp flags="gs">
             <fileset 
                 dir="${dir.app.files}" 
@@ -15,7 +15,7 @@
     </target>
 
     <!-- Task: comment out logging statements -->
-    <target name="-js.hide.console" if="js.files">
+    <target name="-js.hide.console" if="js.files" unless="build.mode.dev">
         <replaceregexp flags="mg" >
             <regexp pattern='^(.*?(?:Y.log|console.log|YAHOO.log).*?(?:;|\).*;|(?:\r?\n.*?)*?\).*;).*;?.*?\r?\n)' />
             <fileset 
@@ -28,7 +28,7 @@
     </target>
 
     <!-- Task: Compress JS using YUI Compressor -->
-    <target name="-js.compress" if="js.files">
+    <target name="-js.compress" if="js.files" unless="build.mode.dev">
         <yuicompressor>
             <fileset 
                 dir="${dir.app.files}" 
@@ -38,15 +38,27 @@
         </yuicompressor>
     </target>
     
+    <!-- Make sure JS inlining is enabled & dev mode is not -->
+    <target name="-js.inline.check" if="js.files">
+        <condition property="js.inline">
+            <and>
+                <not>
+                    <istrue value="${build.mode.dev}" />
+                </not>
+                <not>
+                    <istrue value="${js.inline.disable}" />
+                </not>
+            </and>
+        </condition>
+    </target>
+    
     <!-- Take <script src="fooga.js"></script> tags & inject the JS inline -->
-    <target name="-js.inline" if="js.files" unless="js.noinline">
-        <script 
-            language="javascript" 
-            src="${dir.build.js}/js-script-inliner.js" 
-            classpathref="script.classpath"
-        />
+    <target name="-js.inline" depends="-js.inline.check" if="js.inline">
+        <rhinoscript src="${dir.build.js}/js-script-inliner.js" />
     </target>
     
     <!-- Task: kick off all other js tasks -->
-    <target name="-js" depends="-js.remove.version, -js.hide.console, -js.compress, -js.inline" />
+    <target name="-js" 
+            depends="-js.remove.version, -js.hide.console, -js.compress" 
+    />
 </project>

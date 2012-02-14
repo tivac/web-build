@@ -3,17 +3,21 @@
     
     <!-- Common Components -->
     <property name="regex.cdn.base">((?:\.\.\/)+|\/)([^"']+?)?</property>
-    <property name="regex.cdn.js.suffix">(js)</property>
-    <property name="regex.cdn.img.suffix">(jpg|png|gif)</property>
-    <property name="regex.cdn.font.suffix">(svg|eot|woff|ttf|svgz)</property>
+    
+    <property name="regex.cdn.js.suffix"  >(\.js)</property>
+    <property name="regex.cdn.css.suffix" >(\.css)</property>
+    <property name="regex.cdn.img.suffix" >(\.jpg|png|gif)</property>
+    <property name="regex.cdn.font.suffix">(\.svg|eot|woff|ttf|svgz)</property>
     
     <!-- JS -->
     <property name="regex.cdn.js.yui">(base[^:]?:[^"']?["'])${regex.cdn.base}</property>
     <property name="regex.cdn.js.src">(script[^>]src[^=]?=[^"']?["'])${regex.cdn.base}${regex.cdn.js.suffix}</property>
     <property name="regex.cdn.js.js" >(["'])${regex.cdn.base}${regex.cdn.js.suffix}</property>
-    <property name="regex.cdn.css"   >(href=["'])${regex.cdn.base}(css)</property>
     
     <!-- CSS -->
+    <property name="regex.cdn.css">(href=["'])${regex.cdn.base}${regex.cdn.css.suffix}</property>
+    
+    <!-- Images -->
     <property name="regex.cdn.img.css">(url\(["']?)${regex.cdn.base}${regex.cdn.img.suffix}\)</property>
     <property name="regex.cdn.img.src">(img[^>]src[^=]?=[^"']?["'])${regex.cdn.base}${regex.cdn.img.suffix}</property>
     <property name="regex.cdn.img.js" >(["'])${regex.cdn.base}${regex.cdn.img.suffix}</property>
@@ -23,7 +27,7 @@
     <property name="regex.cdn.swf">(["'])${regex.cdn.base}(swf)</property>
     
     <!-- Macro: Replace in specified files -->
-    <macrodef name="cdn-replace">
+    <macrodef name="regex-replace">
         <attribute name="files" />
         <attribute name="regex" />
         <attribute name="sub" />
@@ -37,7 +41,7 @@
     </macrodef>
     
     <!-- set up CDN stuff if needed -->
-    <target name="-cdn.mode.check" if="build.mode">
+    <target name="-cdn.mode.check" unless="build.mode.dev">
         <!-- check for live -->
         <condition property="cdn.base" value="${cdn.base.live}">
             <and>
@@ -72,55 +76,55 @@
     <!-- prepend CDN absolute URLs on CSS files -->
     <target name="-cdn.transform" if="cdn.base">
         
-        <cdn-replace 
+        <regex-replace 
             files = "${filter.markup}" 
             regex = "${regex.cdn.css}" 
             sub   = "\1${cdn.base}\2\3\4"
         />
         
-        <cdn-replace 
+        <regex-replace 
             files = "${filter.js},${filter.markup}"
             regex = "${regex.cdn.js.yui}"
             sub   = "\1${cdn.base}\2\3" 
         />
         
-        <cdn-replace
+        <regex-replace
             files = "${filter.markup}"
             regex = "${regex.cdn.js.src}"
             sub   = "\1${cdn.base}\2\3\4" 
         />
         
-        <cdn-replace
+        <regex-replace
             files = "${filter.js},${filter.markup}"
             regex = "${regex.cdn.js.js}"
             sub   = "\1${cdn.base}\2\3\4" 
         />
         
-        <cdn-replace
+        <regex-replace
             files = "${filter.css},${filter.markup}"
             regex = "${regex.cdn.img.css}"
             sub   = "\1${cdn.base}\2\3\4)" 
         />
         
-        <cdn-replace
+        <regex-replace
             files = "${filter.markup}"
             regex = "${regex.cdn.img.src}"
             sub   = "\1${cdn.base}\2\3\4" 
         />
         
-        <cdn-replace
+        <regex-replace
             files = "${filter.js},${filter.markup}"
             regex = "${regex.cdn.img.js}"
             sub   = "\1${cdn.base}\2\3\4" 
         />
         
-        <cdn-replace
+        <regex-replace
             files = "${filter.css},${filter.markup}"
             regex = "${regex.cdn.font}"
             sub   = "\1${cdn.base}\2\3\4" 
         />
         
-        <cdn-replace
+        <regex-replace
             files = "${filter.js},${filter.markup}"
             regex = "${regex.cdn.swf}"
             sub   = "\1${cdn.base}\2\3\4" 

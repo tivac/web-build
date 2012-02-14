@@ -6,25 +6,8 @@
     <property name="regex.devlive.html">&lt;!-- dev -->.*?!-- /dev --></property>
     <property name="regex.devlive.enable">/\* live|/+live \*/|&lt;!-- live|/live --></property>
     
-    <!-- check for stage/live -->
-    <target name="-devlive.mode.check" if="build.mode">
-        <condition property="devlive.mode">
-            <and>
-                <isset property="build.mode" />
-                <not>
-                    <equals 
-                        arg1="${build.mode}" 
-                        arg2="dev" 
-                        trim="true" 
-                        casesensitive="false" 
-                    />
-                </not>
-            </and>
-        </condition>
-    </target>
-
-    <!-- handle dev -> live switches in js/css/html files (only runs if a build.mode is specified) -->
-    <target name="-devlive" depends="-devlive.mode.check" if="devlive.mode">
+    <!-- handle dev -> live switches in js/css/html files -->
+    <target name="-devlive" unless="build.mode.dev">
         
         <!-- remove dev code -->
         <replaceregexp flags="gs">

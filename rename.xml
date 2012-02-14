@@ -1,48 +1,49 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <project>
     
-    <target name="-rename.js" if="js.files">
+    <target name="-rename.js" if="js.files" unless="build.mode.dev">
         <rename-files 
             mapping="${mapping.js}" 
             include="${filter.js}" 
-            exclude="${filter.binary}"
+            exclude="${filter.js.exclude}"
+            replace-exclude="${filter.binary}"
         />
     </target>
     
-    <target name="-rename.css" if="css.files">
+    <target name="-rename.css" if="css.files" unless="build.mode.dev">
         <rename-files 
             mapping="${mapping.css}" 
             include="${filter.css}" 
-            exclude="${filter.binary}"
+            replace-exclude="${filter.binary}"
         />
     </target>
     
-    <target name="-rename.fonts" if="fonts.files">
+    <target name="-rename.fonts" if="fonts.files" unless="build.mode.dev">
         <rename-files 
             mapping="${mapping.fonts}" 
             include="${filter.fonts}" 
-            exclude="${filter.binary}"
+            replace-exclude="${filter.binary}"
         />
     </target>
     
-    <target name="-rename.img" if="img.files">
+    <target name="-rename.img" if="img.files" unless="build.mode.dev">
         <rename-files 
             mapping="${mapping.img}" 
             include="${filter.img}" 
-            exclude="${filter.binary}"
+            replace-exclude="${filter.binary}"
         />
     </target>
     
-    <target name="-rename.swf" if="swf.files">
+    <target name="-rename.swf" if="swf.files" unless="build.mode.dev">
         <rename-files 
             mapping="${mapping.swf}" 
             include="${filter.swf}" 
-            exclude="${filter.binary}"
+            replace-exclude="${filter.binary}"
         />
     </target>
     
     <!-- clean up mapping files (called by finalize step) -->
-    <target name="-rename.clean" unless="mapping.files.preserve">
+    <target name="-rename.clean" unless="service.build">
         <delete quiet="true">
             <fileset 
                 dir="${dir.app.temp}" 

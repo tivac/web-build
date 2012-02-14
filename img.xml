@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project>
+    
+    <!-- Open all png/jpg files for edit onto the default changelist -->
+    <target name="-img.p4edit">
+        <apply executable="p4" osfamily="windows" force="true">
+            <fileset dir="${basedir}" includes="${filter.png}, ${filter.jpg}" />
+            <arg value="edit" />
+            <srcfile />
+        </apply>
+    </target>
+    
+    <!-- Revert all unchanged png/jpg files -->
+    <target name="-img.p4revert">
+        <apply executable="p4" osfamily="windows" force="true">
+            <fileset dir="${basedir}" includes="${filter.png}, ${filter.jpg}" />
+            <arg value="revert" />
+            <arg value="-a" />
+            <srcfile />
+        </apply>
+    </target>
+    
+    <!-- Run PNGs through optipng -->
+    <target name="-img.png">
+        <apply executable="${tools.optipng}" osfamily="windows" force="true">
+            <fileset dir="${basedir}" includes="${filter.png}" />
+            <arg value="-quiet" />
+            <arg value="-o7" />
+            <srcfile/>
+        </apply>
+    </target>
+    
+    <!-- Run JPGs through jpegtran -->
+    <target name="-img.jpg">
+        <condition property="images.metadata.value" value="all" else="none">
+            <istrue value="${images.leave.metadata}" />
+        </condition>
+        
+        <apply executable="${tools.jpegtran}" dest="${basedir}" osfamily="windows" force="true">
+            <fileset dir="${basedir}" includes="${filter.jpg}" />
+            <arg value="-copy" />
+            <arg value="${images.metadata.value}" />
+            <arg value="-optimize" />
+            <arg value="-outfile" />
+            <targetfile/>
+            <srcfile/>
+            <mapper type="identity" />
+        </apply>
+        
+        
+    </target>
+    
+    <!-- Task: kick off image compression -->
+    <target name="img" 
+            depends="-img.p4edit, -img.png, -img.jpg, -img.p4revert" 
+    />
+</project>

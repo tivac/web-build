@@ -6,7 +6,11 @@
         <mkdir dir="${dir.temp}" />
         
         <copy todir="${dir.app.temp}" overwrite="true">
-            <fileset dir="${basedir}" includes="${filter.copy}" excludes="${filter.nocopy}" />
+            <fileset 
+                dir="${basedir}" 
+                includes="${filter.copy}" 
+                excludes="${filter.nocopy},**/${dir.temp},**/${dir.result}" 
+            />
         </copy>
     </target>
     
